@@ -9,5 +9,6 @@ data class GameUiState(
     val isGameOver: Boolean = false,
     val activeTriviaQuestion: TriviaQuestion? = null,
     val isTriviaVisible: Boolean = false,
-    val rescueChanceUsed: Boolean = false
+    val rescueChanceUsed: Boolean = false,
+    val triviaTimeLeftSeconds: Int = 0
 )

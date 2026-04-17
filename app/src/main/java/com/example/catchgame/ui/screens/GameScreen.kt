@@ -24,6 +24,7 @@ import com.example.catchgame.game.engine.GameController
 import com.example.catchgame.game.model.DifficultyLevel
 import com.example.catchgame.ui.components.GameHud
 import com.example.catchgame.ui.components.TriviaDialog
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
@@ -50,6 +51,13 @@ fun GameScreen(
                 }
                 lastFrameTimeNanos = frameTime
             }
+        }
+    }
+
+    LaunchedEffect(uiState.isTriviaVisible) {
+        while (uiState.isTriviaVisible && !uiState.isGameOver) {
+            delay(1000)
+            controller.tickTriviaTimer()
         }
     }
 
@@ -144,6 +152,7 @@ fun GameScreen(
         if (uiState.isTriviaVisible && uiState.activeTriviaQuestion != null) {
             TriviaDialog(
                 question = uiState.activeTriviaQuestion,
+                timeLeftSeconds = uiState.triviaTimeLeftSeconds,
                 onAnswerSelected = { selectedIndex ->
                     controller.answerTrivia(selectedIndex)
                 }

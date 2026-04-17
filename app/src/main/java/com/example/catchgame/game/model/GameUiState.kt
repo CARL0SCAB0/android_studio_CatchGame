@@ -6,5 +6,7 @@ data class GameUiState(
     val playerX: Float = 0f,
     val playerY: Float = 0f,
     val items: List<FallingItem> = emptyList(),
-    val isGameOver: Boolean = false
+    val isGameOver: Boolean = false,
+    val activeTriviaQuestion: TriviaQuestion? = null,
+    val isTriviaVisible: Boolean = false
 )

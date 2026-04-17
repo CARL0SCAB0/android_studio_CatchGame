@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.catchgame.game.config.GameConfig
+import com.example.catchgame.game.data.TriviaRepository
 import com.example.catchgame.game.model.DifficultyLevel
 import com.example.catchgame.game.model.FallingItem
 import com.example.catchgame.game.model.GameUiState
@@ -65,18 +66,37 @@ class GameController(
     }
 
     fun setPlayerTargetByTouch(touchX: Float) {
-        if (!isInitialized || uiState.isGameOver) return
+        if (!isInitialized || uiState.isGameOver || uiState.isTriviaVisible) return
 
         targetPlayerX = touchX - (playerWidthPx / 2f)
         targetPlayerX = targetPlayerX.coerceIn(0f, screenWidthPx - playerWidthPx)
     }
 
     fun update(deltaSeconds: Float) {
-        if (!isInitialized || uiState.isGameOver) return
+        if (!isInitialized || uiState.isGameOver || uiState.isTriviaVisible) return
 
         updatePlayer(deltaSeconds)
         updateSpawner(deltaSeconds)
         updateItems(deltaSeconds)
+    }
+
+    fun answerTrivia(selectedIndex: Int) {
+        val question = uiState.activeTriviaQuestion ?: return
+
+        val isCorrect = selectedIndex == question.correctAnswerIndex
+
+        uiState = if (isCorrect) {
+            uiState.copy(
+                activeTriviaQuestion = null,
+                isTriviaVisible = false
+            )
+        } else {
+            uiState.copy(
+                activeTriviaQuestion = null,
+                isTriviaVisible = false,
+                isGameOver = true
+            )
+        }
     }
 
     private fun updatePlayer(deltaSeconds: Float) {
@@ -130,6 +150,7 @@ class GameController(
         var score = uiState.score
         var lives = uiState.lives
         var gameOver = uiState.isGameOver
+        var triggerTrivia = false
 
         for (item in uiState.items) {
             val movedItem = item.copy(
@@ -138,10 +159,10 @@ class GameController(
 
             if (isCollidingWithPlayer(movedItem)) {
                 if (movedItem.isBad) {
-                    lives -= 1
-                    if (lives <= 0) {
-                        lives = 0
-                        gameOver = true
+                    if (lives > 1) {
+                        lives -= 1
+                    } else {
+                        triggerTrivia = true
                     }
                 } else {
                     score += 1
@@ -154,12 +175,21 @@ class GameController(
             }
         }
 
-        uiState = uiState.copy(
+        val nextState = uiState.copy(
             score = score,
             lives = lives,
             items = updatedItems,
             isGameOver = gameOver
         )
+
+        uiState = if (triggerTrivia) {
+            nextState.copy(
+                activeTriviaQuestion = TriviaRepository.getRandomQuestion(),
+                isTriviaVisible = true
+            )
+        } else {
+            nextState
+        }
     }
 
     private fun isCollidingWithPlayer(item: FallingItem): Boolean {

@@ -151,6 +151,7 @@ class GameController(
         var lives = uiState.lives
         var gameOver = uiState.isGameOver
         var triggerTrivia = false
+        var rescueChanceUsed = uiState.rescueChanceUsed
 
         for (item in uiState.items) {
             val movedItem = item.copy(
@@ -159,10 +160,19 @@ class GameController(
 
             if (isCollidingWithPlayer(movedItem)) {
                 if (movedItem.isBad) {
-                    if (lives > 1) {
-                        lives -= 1
-                    } else {
-                        triggerTrivia = true
+                    when {
+                        lives > 1 -> {
+                            lives -= 1
+                        }
+
+                        lives == 1 && !rescueChanceUsed -> {
+                            triggerTrivia = true
+                            rescueChanceUsed = true
+                        }
+
+                        lives == 1 && rescueChanceUsed -> {
+                            gameOver = true
+                        }
                     }
                 } else {
                     score += 1
@@ -179,7 +189,8 @@ class GameController(
             score = score,
             lives = lives,
             items = updatedItems,
-            isGameOver = gameOver
+            isGameOver = gameOver,
+            rescueChanceUsed = rescueChanceUsed
         )
 
         uiState = if (triggerTrivia) {

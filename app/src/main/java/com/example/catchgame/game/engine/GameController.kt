@@ -23,6 +23,8 @@ class GameController(
     private val difficulty = GameConfig.difficultySettings(difficultyLevel)
     private val random = Random(System.currentTimeMillis())
 
+    private val initialTriviaTimeSeconds = 10
+
     private var screenWidthPx = 0f
     private var screenHeightPx = 0f
     private var playerWidthPx = 0f
@@ -88,13 +90,35 @@ class GameController(
         uiState = if (isCorrect) {
             uiState.copy(
                 activeTriviaQuestion = null,
-                isTriviaVisible = false
+                isTriviaVisible = false,
+                triviaTimeLeftSeconds = 0
             )
         } else {
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,
+                triviaTimeLeftSeconds = 0,
                 isGameOver = true
+            )
+        }
+    }
+
+    fun tickTriviaTimer() {
+        if (!uiState.isTriviaVisible || uiState.activeTriviaQuestion == null) return
+        if (uiState.isGameOver) return
+
+        val newTime = uiState.triviaTimeLeftSeconds - 1
+
+        uiState = if (newTime <= 0) {
+            uiState.copy(
+                triviaTimeLeftSeconds = 0,
+                activeTriviaQuestion = null,
+                isTriviaVisible = false,
+                isGameOver = true
+            )
+        } else {
+            uiState.copy(
+                triviaTimeLeftSeconds = newTime
             )
         }
     }
@@ -196,7 +220,8 @@ class GameController(
         uiState = if (triggerTrivia) {
             nextState.copy(
                 activeTriviaQuestion = TriviaRepository.getRandomQuestion(),
-                isTriviaVisible = true
+                isTriviaVisible = true,
+                triviaTimeLeftSeconds = initialTriviaTimeSeconds
             )
         } else {
             nextState

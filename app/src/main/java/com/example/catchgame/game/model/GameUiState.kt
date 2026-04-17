@@ -8,5 +8,6 @@ data class GameUiState(
     val items: List<FallingItem> = emptyList(),
     val isGameOver: Boolean = false,
     val activeTriviaQuestion: TriviaQuestion? = null,
-    val isTriviaVisible: Boolean = false
+    val isTriviaVisible: Boolean = false,
+    val rescueChanceUsed: Boolean = false
 )

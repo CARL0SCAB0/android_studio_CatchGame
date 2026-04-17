@@ -13,16 +13,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
 import com.example.catchgame.R
 import com.example.catchgame.game.config.GameConfig
 import com.example.catchgame.game.engine.GameController
 import com.example.catchgame.game.model.DifficultyLevel
 import com.example.catchgame.ui.components.GameHud
+import com.example.catchgame.ui.components.TriviaDialog
 import kotlin.math.roundToInt
 
 @Composable
@@ -61,15 +62,17 @@ fun GameScreen(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { offset ->
-                        controller.setPlayerTargetByTouch(offset.x)
-                    },
-                    onDrag = { change, _ ->
-                        controller.setPlayerTargetByTouch(change.position.x)
-                    }
-                )
+            .pointerInput(uiState.isTriviaVisible) {
+                if (!uiState.isTriviaVisible) {
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            controller.setPlayerTargetByTouch(offset.x)
+                        },
+                        onDrag = { change, _ ->
+                            controller.setPlayerTargetByTouch(change.position.x)
+                        }
+                    )
+                }
             }
     ) {
         val screenWidthPx = with(density) { maxWidth.toPx() }
@@ -135,6 +138,15 @@ fun GameScreen(
             GameHud(
                 score = uiState.score,
                 lives = uiState.lives
+            )
+        }
+
+        if (uiState.isTriviaVisible && uiState.activeTriviaQuestion != null) {
+            TriviaDialog(
+                question = uiState.activeTriviaQuestion,
+                onAnswerSelected = { selectedIndex ->
+                    controller.answerTrivia(selectedIndex)
+                }
             )
         }
     }

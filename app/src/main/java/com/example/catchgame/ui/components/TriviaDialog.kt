@@ -16,12 +16,12 @@ import com.example.catchgame.game.model.TriviaQuestion
 @Composable
 fun TriviaDialog(
     question: TriviaQuestion,
+    timeLeftSeconds: Int,
     onAnswerSelected: (Int) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {
-            // No permitir cerrar tocando fuera del diálogo,
-            // para obligar al jugador a responder.
+            // No se permite cerrar sin responder.
         },
         title = {
             Text(
@@ -30,7 +30,14 @@ fun TriviaDialog(
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Tiempo restante: $timeLeftSeconds s",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
                 Text(
                     text = question.question,
                     style = MaterialTheme.typography.bodyLarge

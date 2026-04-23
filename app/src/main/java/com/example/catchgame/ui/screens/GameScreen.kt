@@ -47,7 +47,6 @@ fun GameScreen(
     }
 
     val controller = remember(sessionId) {
-        triviaRepository.resetSession()
         GameController(
             difficultyLevel = difficultyLevel,
             triviaRepository = triviaRepository
@@ -71,19 +70,13 @@ fun GameScreen(
         }
     }
 
-<<<<<<< HEAD
     LaunchedEffect(uiState.isTriviaVisible, uiState.isTriviaAnswerLocked) {
         while (uiState.isTriviaVisible && !uiState.isGameOver && !uiState.isTriviaAnswerLocked) {
-=======
-    LaunchedEffect(uiState.isTriviaVisible) {
-        while (uiState.isTriviaVisible && !uiState.isGameOver) {
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
             delay(1000)
             controller.tickTriviaTimer()
         }
     }
 
-<<<<<<< HEAD
     LaunchedEffect(uiState.triviaFeedbackMessage, uiState.isTriviaAnswerLocked) {
         if (uiState.isTriviaVisible && uiState.isTriviaAnswerLocked && uiState.triviaFeedbackMessage != null) {
             delay(1200)
@@ -91,8 +84,6 @@ fun GameScreen(
         }
     }
 
-=======
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
     LaunchedEffect(uiState.isGameOver) {
         if (uiState.isGameOver) {
             onGameOver(uiState.score)
@@ -185,11 +176,8 @@ fun GameScreen(
             TriviaDialog(
                 question = uiState.activeTriviaQuestion,
                 timeLeftSeconds = uiState.triviaTimeLeftSeconds,
-<<<<<<< HEAD
                 feedbackMessage = uiState.triviaFeedbackMessage,
                 isAnswerLocked = uiState.isTriviaAnswerLocked,
-=======
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
                 onAnswerSelected = { selectedIndex ->
                     controller.answerTrivia(selectedIndex)
                 }

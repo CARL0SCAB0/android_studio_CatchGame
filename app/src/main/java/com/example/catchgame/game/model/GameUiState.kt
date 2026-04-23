@@ -10,8 +10,5 @@ data class GameUiState(
     val activeTriviaQuestion: TriviaQuestion? = null,
     val isTriviaVisible: Boolean = false,
     val rescueChanceUsed: Boolean = false,
-    val triviaTimeLeftSeconds: Int = 0,
-    val triviaFeedbackMessage: String? = null,
-    val isTriviaAnswerLocked: Boolean = false,
-    val triviaAnswerWasCorrect: Boolean? = null
+    val triviaTimeLeftSeconds: Int = 0
 )

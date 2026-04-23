@@ -107,19 +107,13 @@ class GameController(
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,
-                triviaTimeLeftSeconds = 0,
-                triviaFeedbackMessage = null,
-                isTriviaAnswerLocked = false,
-                triviaAnswerWasCorrect = null
+                triviaTimeLeftSeconds = 0
             )
         } else {
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,
                 triviaTimeLeftSeconds = 0,
-                triviaFeedbackMessage = null,
-                isTriviaAnswerLocked = false,
-                triviaAnswerWasCorrect = null,
                 isGameOver = true
             )
         }
@@ -127,16 +121,16 @@ class GameController(
 
     fun tickTriviaTimer() {
         if (!uiState.isTriviaVisible || uiState.activeTriviaQuestion == null) return
-        if (uiState.isGameOver || uiState.isTriviaAnswerLocked) return
+        if (uiState.isGameOver) return
 
         val newTime = uiState.triviaTimeLeftSeconds - 1
 
         uiState = if (newTime <= 0) {
             uiState.copy(
                 triviaTimeLeftSeconds = 0,
-                triviaFeedbackMessage = "Se acabó el tiempo. Fin del juego.",
-                isTriviaAnswerLocked = true,
-                triviaAnswerWasCorrect = false
+                activeTriviaQuestion = null,
+                isTriviaVisible = false,
+                isGameOver = true
             )
         } else {
             uiState.copy(
@@ -241,12 +235,9 @@ class GameController(
 
         uiState = if (triggerTrivia) {
             nextState.copy(
-                activeTriviaQuestion = triviaRepository.getRandomQuestion(),
+                activeTriviaQuestion = TriviaRepository.getRandomQuestion(),
                 isTriviaVisible = true,
-                triviaTimeLeftSeconds = initialTriviaTimeSeconds,
-                triviaFeedbackMessage = null,
-                isTriviaAnswerLocked = false,
-                triviaAnswerWasCorrect = null
+                triviaTimeLeftSeconds = initialTriviaTimeSeconds
             )
         } else {
             nextState

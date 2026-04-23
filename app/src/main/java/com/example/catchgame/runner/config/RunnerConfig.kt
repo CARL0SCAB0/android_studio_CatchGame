@@ -16,6 +16,15 @@ object RunnerConfig {
     const val JUMP_FORCE_PX_PER_SECOND = -900f
 
     /**
+     * Obstáculos
+     */
+    const val OBSTACLE_SPEED_PX_PER_SECOND = 700f
+    const val OBSTACLE_SPAWN_INTERVAL_SECONDS = 1.8f
+
+    val OBSTACLE_WIDTH = 32.dp
+    val OBSTACLE_HEIGHT = 52.dp
+
+    /**
      * Posición horizontal fija del jugador dentro de la pantalla.
      */
     val PLAYER_START_X = 140.dp

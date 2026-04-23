@@ -9,49 +9,68 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.catchgame.game.model.DifficultyLevel
+import com.example.catchgame.runner.ui.RunnerScreen
 import com.example.catchgame.ui.screens.GameOverScreen
 import com.example.catchgame.ui.screens.GameScreen
+import com.example.catchgame.ui.screens.MainMenuScreen
 import com.example.catchgame.ui.screens.MenuScreen
 import com.example.catchgame.ui.theme.CatchgameTheme
 
 class MainActivity : ComponentActivity() {
 
     sealed interface AppScreen {
-        data object Menu : AppScreen
-        data class Playing(val difficulty: DifficultyLevel, val sessionId: Int) : AppScreen
-        data class GameOver(val score: Int, val difficulty: DifficultyLevel) : AppScreen
+        data object MainMenu : AppScreen
+        data object CatchMenu : AppScreen
+        data class PlayingCatch(val difficulty: DifficultyLevel, val sessionId: Int) : AppScreen
+        data class CatchGameOver(val score: Int, val difficulty: DifficultyLevel) : AppScreen
+        data class PlayingRunner(val sessionId: Int) : AppScreen
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CatchgameTheme() {
+            CatchgameTheme {
                 var selectedDifficulty by remember { mutableStateOf(DifficultyLevel.EASY) }
-                var sessionId by remember { mutableIntStateOf(0) }
-                var currentScreen by remember { mutableStateOf<AppScreen>(AppScreen.Menu) }
+                var catchSessionId by remember { mutableIntStateOf(0) }
+                var runnerSessionId by remember { mutableIntStateOf(0) }
+                var currentScreen by remember { mutableStateOf<AppScreen>(AppScreen.MainMenu) }
 
                 when (val screen = currentScreen) {
-                    AppScreen.Menu -> {
-                        MenuScreen(
-                            selectedDifficulty = selectedDifficulty,
-                            onDifficultySelected = { selectedDifficulty = it },
-                            onStartGame = {
-                                sessionId++
-                                currentScreen = AppScreen.Playing(
-                                    difficulty = selectedDifficulty,
-                                    sessionId = sessionId
+                    AppScreen.MainMenu -> {
+                        MainMenuScreen(
+                            onOpenCatchGame = {
+                                currentScreen = AppScreen.CatchMenu
+                            },
+                            onOpenRunnerGame = {
+                                runnerSessionId++
+                                currentScreen = AppScreen.PlayingRunner(
+                                    sessionId = runnerSessionId
                                 )
                             }
                         )
                     }
 
-                    is AppScreen.Playing -> {
+                    AppScreen.CatchMenu -> {
+                        MenuScreen(
+                            selectedDifficulty = selectedDifficulty,
+                            onDifficultySelected = { selectedDifficulty = it },
+                            onStartGame = {
+                                catchSessionId++
+                                currentScreen = AppScreen.PlayingCatch(
+                                    difficulty = selectedDifficulty,
+                                    sessionId = catchSessionId
+                                )
+                            }
+                        )
+                    }
+
+                    is AppScreen.PlayingCatch -> {
                         GameScreen(
                             difficultyLevel = screen.difficulty,
                             sessionId = screen.sessionId,
                             onGameOver = { finalScore ->
-                                currentScreen = AppScreen.GameOver(
+                                currentScreen = AppScreen.CatchGameOver(
                                     score = finalScore,
                                     difficulty = screen.difficulty
                                 )
@@ -59,18 +78,27 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    is AppScreen.GameOver -> {
+                    is AppScreen.CatchGameOver -> {
                         GameOverScreen(
                             score = screen.score,
                             onRestart = {
-                                sessionId++
-                                currentScreen = AppScreen.Playing(
+                                catchSessionId++
+                                currentScreen = AppScreen.PlayingCatch(
                                     difficulty = screen.difficulty,
-                                    sessionId = sessionId
+                                    sessionId = catchSessionId
                                 )
                             },
                             onBackToMenu = {
-                                currentScreen = AppScreen.Menu
+                                currentScreen = AppScreen.MainMenu
+                            }
+                        )
+                    }
+
+                    is AppScreen.PlayingRunner -> {
+                        RunnerScreen(
+                            sessionId = screen.sessionId,
+                            onBackToMenu = {
+                                currentScreen = AppScreen.MainMenu
                             }
                         )
                     }

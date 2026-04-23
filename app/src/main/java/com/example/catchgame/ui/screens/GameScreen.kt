@@ -71,10 +71,17 @@ fun GameScreen(
         }
     }
 
-    LaunchedEffect(uiState.isTriviaVisible) {
-        while (uiState.isTriviaVisible && !uiState.isGameOver) {
+    LaunchedEffect(uiState.isTriviaVisible, uiState.isTriviaAnswerLocked) {
+        while (uiState.isTriviaVisible && !uiState.isGameOver && !uiState.isTriviaAnswerLocked) {
             delay(1000)
             controller.tickTriviaTimer()
+        }
+    }
+
+    LaunchedEffect(uiState.triviaFeedbackMessage, uiState.isTriviaAnswerLocked) {
+        if (uiState.isTriviaVisible && uiState.isTriviaAnswerLocked && uiState.triviaFeedbackMessage != null) {
+            delay(1200)
+            controller.resolveTriviaAfterFeedback()
         }
     }
 
@@ -170,6 +177,8 @@ fun GameScreen(
             TriviaDialog(
                 question = uiState.activeTriviaQuestion,
                 timeLeftSeconds = uiState.triviaTimeLeftSeconds,
+                feedbackMessage = uiState.triviaFeedbackMessage,
+                isAnswerLocked = uiState.isTriviaAnswerLocked,
                 onAnswerSelected = { selectedIndex ->
                     controller.answerTrivia(selectedIndex)
                 }

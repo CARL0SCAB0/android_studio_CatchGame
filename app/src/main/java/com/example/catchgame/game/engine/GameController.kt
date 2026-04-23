@@ -107,26 +107,19 @@ class GameController(
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,
-<<<<<<< HEAD
                 triviaTimeLeftSeconds = 0,
                 triviaFeedbackMessage = null,
                 isTriviaAnswerLocked = false,
                 triviaAnswerWasCorrect = null
-=======
-                triviaTimeLeftSeconds = 0
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
             )
         } else {
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,
                 triviaTimeLeftSeconds = 0,
-<<<<<<< HEAD
                 triviaFeedbackMessage = null,
                 isTriviaAnswerLocked = false,
                 triviaAnswerWasCorrect = null,
-=======
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
                 isGameOver = true
             )
         }
@@ -134,26 +127,16 @@ class GameController(
 
     fun tickTriviaTimer() {
         if (!uiState.isTriviaVisible || uiState.activeTriviaQuestion == null) return
-<<<<<<< HEAD
         if (uiState.isGameOver || uiState.isTriviaAnswerLocked) return
-=======
-        if (uiState.isGameOver) return
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
 
         val newTime = uiState.triviaTimeLeftSeconds - 1
 
         uiState = if (newTime <= 0) {
             uiState.copy(
                 triviaTimeLeftSeconds = 0,
-<<<<<<< HEAD
                 triviaFeedbackMessage = "Se acabó el tiempo. Fin del juego.",
                 isTriviaAnswerLocked = true,
                 triviaAnswerWasCorrect = false
-=======
-                activeTriviaQuestion = null,
-                isTriviaVisible = false,
-                isGameOver = true
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
             )
         } else {
             uiState.copy(
@@ -258,18 +241,12 @@ class GameController(
 
         uiState = if (triggerTrivia) {
             nextState.copy(
-<<<<<<< HEAD
                 activeTriviaQuestion = triviaRepository.getRandomQuestion(),
                 isTriviaVisible = true,
                 triviaTimeLeftSeconds = initialTriviaTimeSeconds,
                 triviaFeedbackMessage = null,
                 isTriviaAnswerLocked = false,
                 triviaAnswerWasCorrect = null
-=======
-                activeTriviaQuestion = TriviaRepository.getRandomQuestion(),
-                isTriviaVisible = true,
-                triviaTimeLeftSeconds = initialTriviaTimeSeconds
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
             )
         } else {
             nextState

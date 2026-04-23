@@ -47,6 +47,7 @@ fun GameScreen(
     }
 
     val controller = remember(sessionId) {
+        triviaRepository.resetSession()
         GameController(
             difficultyLevel = difficultyLevel,
             triviaRepository = triviaRepository

@@ -17,20 +17,13 @@ import com.example.catchgame.game.model.TriviaQuestion
 fun TriviaDialog(
     question: TriviaQuestion,
     timeLeftSeconds: Int,
-<<<<<<< HEAD
     feedbackMessage: String?,
     isAnswerLocked: Boolean,
-=======
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
     onAnswerSelected: (Int) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {
-<<<<<<< HEAD
             // No permitir cerrar el diálogo sin resolver la trivia.
-=======
-            // No se permite cerrar sin responder.
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
         },
         title = {
             Text(
@@ -43,14 +36,11 @@ fun TriviaDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-<<<<<<< HEAD
                     text = "Categoría: ${question.category.displayName}",
                     style = MaterialTheme.typography.titleSmall
                 )
 
                 Text(
-=======
->>>>>>> ac753394584083abda6cebc57966da7fe7c7b46d
                     text = "Tiempo restante: $timeLeftSeconds s",
                     style = MaterialTheme.typography.titleMedium
                 )

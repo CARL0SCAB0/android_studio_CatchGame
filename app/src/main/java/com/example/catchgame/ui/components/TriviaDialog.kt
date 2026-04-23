@@ -46,10 +46,19 @@ fun TriviaDialog(
                 question.options.forEachIndexed { index, option ->
                     Button(
                         onClick = { onAnswerSelected(index) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isAnswerLocked
                     ) {
                         Text(text = option)
                     }
+                }
+
+                if (feedbackMessage != null) {
+                    Text(
+                        text = feedbackMessage,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
             }
         },

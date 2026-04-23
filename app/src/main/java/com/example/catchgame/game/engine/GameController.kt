@@ -12,7 +12,8 @@ import kotlin.math.max
 import kotlin.random.Random
 
 class GameController(
-    difficultyLevel: DifficultyLevel
+    difficultyLevel: DifficultyLevel,
+    private val triviaRepository: TriviaRepository
 ) {
 
     var uiState by mutableStateOf(
@@ -84,10 +85,25 @@ class GameController(
 
     fun answerTrivia(selectedIndex: Int) {
         val question = uiState.activeTriviaQuestion ?: return
+        if (uiState.isTriviaAnswerLocked) return
 
         val isCorrect = selectedIndex == question.correctAnswerIndex
 
-        uiState = if (isCorrect) {
+        uiState = uiState.copy(
+            triviaFeedbackMessage = if (isCorrect) {
+                "¡Respuesta correcta! Conservas tu última vida."
+            } else {
+                "Respuesta incorrecta. Fin del juego."
+            },
+            isTriviaAnswerLocked = true,
+            triviaAnswerWasCorrect = isCorrect
+        )
+    }
+
+    fun resolveTriviaAfterFeedback() {
+        val wasCorrect = uiState.triviaAnswerWasCorrect ?: return
+
+        uiState = if (wasCorrect) {
             uiState.copy(
                 activeTriviaQuestion = null,
                 isTriviaVisible = false,

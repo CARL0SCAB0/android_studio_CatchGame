@@ -15,11 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import com.example.catchgame.R
 import com.example.catchgame.game.config.GameConfig
+import com.example.catchgame.game.data.TriviaJsonLoader
+import com.example.catchgame.game.data.TriviaRepository
 import com.example.catchgame.game.engine.GameController
 import com.example.catchgame.game.model.DifficultyLevel
 import com.example.catchgame.ui.components.GameHud
@@ -33,8 +36,22 @@ fun GameScreen(
     sessionId: Int,
     onGameOver: (Int) -> Unit
 ) {
+    val context = LocalContext.current
+
+    val questions = remember {
+        TriviaJsonLoader.loadQuestions(context)
+    }
+
+    val triviaRepository = remember(questions) {
+        TriviaRepository(questions)
+    }
+
     val controller = remember(sessionId) {
-        GameController(difficultyLevel)
+        triviaRepository.resetSession()
+        GameController(
+            difficultyLevel = difficultyLevel,
+            triviaRepository = triviaRepository
+        )
     }
 
     val uiState = controller.uiState
@@ -54,10 +71,17 @@ fun GameScreen(
         }
     }
 
-    LaunchedEffect(uiState.isTriviaVisible) {
-        while (uiState.isTriviaVisible && !uiState.isGameOver) {
+    LaunchedEffect(uiState.isTriviaVisible, uiState.isTriviaAnswerLocked) {
+        while (uiState.isTriviaVisible && !uiState.isGameOver && !uiState.isTriviaAnswerLocked) {
             delay(1000)
             controller.tickTriviaTimer()
+        }
+    }
+
+    LaunchedEffect(uiState.triviaFeedbackMessage, uiState.isTriviaAnswerLocked) {
+        if (uiState.isTriviaVisible && uiState.isTriviaAnswerLocked && uiState.triviaFeedbackMessage != null) {
+            delay(1200)
+            controller.resolveTriviaAfterFeedback()
         }
     }
 
@@ -153,6 +177,8 @@ fun GameScreen(
             TriviaDialog(
                 question = uiState.activeTriviaQuestion,
                 timeLeftSeconds = uiState.triviaTimeLeftSeconds,
+                feedbackMessage = uiState.triviaFeedbackMessage,
+                isAnswerLocked = uiState.isTriviaAnswerLocked,
                 onAnswerSelected = { selectedIndex ->
                     controller.answerTrivia(selectedIndex)
                 }

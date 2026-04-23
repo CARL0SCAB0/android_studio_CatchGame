@@ -1,6 +1,7 @@
 package com.example.catchgame.runner.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
@@ -23,8 +23,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
@@ -64,24 +64,35 @@ fun RunnerScreen(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
+            .pointerInput(uiState.isGameOver, uiState.isFinished) {
                 detectTapGestures(
                     onTap = {
-                        controller.onJumpRequested()
+                        if (!uiState.isGameOver && !uiState.isFinished) {
+                            controller.onJumpRequested()
+                        }
                     }
                 )
             }
     ) {
+        val screenWidthPx = with(density) { maxWidth.toPx() }
         val screenHeightPx = with(density) { maxHeight.toPx() }
         val playerHeightPx = with(density) { RunnerConfig.PLAYER_HEIGHT.toPx() }
+        val playerWidthPx = with(density) { RunnerConfig.PLAYER_WIDTH.toPx() }
         val groundBottomMarginPx = with(density) { RunnerConfig.GROUND_BOTTOM_MARGIN.toPx() }
         val playerStartXPx = with(density) { RunnerConfig.PLAYER_START_X.toPx() }
+        val obstacleWidthPx = with(density) { RunnerConfig.OBSTACLE_WIDTH.toPx() }
+        val obstacleHeightPx = with(density) { RunnerConfig.OBSTACLE_HEIGHT.toPx() }
 
-        LaunchedEffect(screenHeightPx) {
+        LaunchedEffect(screenWidthPx, screenHeightPx) {
             controller.initializeLayout(
+                screenWidthPx = screenWidthPx,
                 screenHeightPx = screenHeightPx,
                 playerHeightPx = playerHeightPx,
-                groundBottomMarginPx = groundBottomMarginPx
+                groundBottomMarginPx = groundBottomMarginPx,
+                playerStartXPx = playerStartXPx,
+                playerWidthPx = playerWidthPx,
+                obstacleWidthPx = obstacleWidthPx,
+                obstacleHeightPx = obstacleHeightPx
             )
         }
 
@@ -158,6 +169,26 @@ fun RunnerScreen(
                     }
                 }
 
+                uiState.obstacles.forEach { obstacle ->
+                    Box(
+                        modifier = Modifier
+                            .offset {
+                                IntOffset(
+                                    x = obstacle.x.roundToInt(),
+                                    y = obstacle.y.roundToInt()
+                                )
+                            }
+                            .size(
+                                width = RunnerConfig.OBSTACLE_WIDTH,
+                                height = RunnerConfig.OBSTACLE_HEIGHT
+                            )
+                            .background(
+                                color = Color(0xFFD32F2F),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                    )
+                }
+
                 RunnerPlayer(
                     modifier = Modifier.offset {
                         IntOffset(
@@ -178,10 +209,38 @@ fun RunnerScreen(
                         .padding(horizontal = 20.dp, vertical = 12.dp)
                 ) {
                     Text(
-                        text = "Toca la pantalla para saltar",
+                        text = if (uiState.isGameOver) {
+                            "Has chocado"
+                        } else {
+                            "Toca la pantalla para saltar"
+                        },
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium
                     )
+                }
+
+                if (uiState.isGameOver) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(Color(0xAA000000))
+                            .padding(24.dp)
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Game Over",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.White
+                            )
+
+                            Button(
+                                onClick = { controller.reset() },
+                                modifier = Modifier.padding(top = 16.dp)
+                            ) {
+                                Text("Reintentar")
+                            }
+                        }
+                    }
                 }
 
                 if (uiState.isFinished) {

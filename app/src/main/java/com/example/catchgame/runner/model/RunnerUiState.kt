@@ -5,8 +5,10 @@ data class RunnerUiState(
     val distanceMeters: Float = 0f,
     val currentSegment: RunnerSegment? = null,
     val isFinished: Boolean = false,
+    val isGameOver: Boolean = false,
     val playerY: Float = 0f,
     val playerVelocityY: Float = 0f,
     val groundY: Float = 0f,
-    val isJumping: Boolean = false
+    val isJumping: Boolean = false,
+    val obstacles: List<RunnerObstacle> = emptyList()
 )

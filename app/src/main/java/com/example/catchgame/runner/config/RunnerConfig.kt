@@ -1,17 +1,35 @@
 package com.example.catchgame.runner.config
 
+import androidx.compose.ui.unit.dp
 import com.example.catchgame.R
 import com.example.catchgame.runner.model.RunnerSegment
 
 object RunnerConfig {
 
     const val TOTAL_DISTANCE_METERS = 1000f
+    const val AUTO_PROGRESS_SPEED_METERS_PER_SECOND = 80f
 
     /**
-     * Velocidad base visual del recorrido.
-     * En esta fase solo sirve para avanzar automáticamente.
+     * Física del salto
      */
-    const val AUTO_PROGRESS_SPEED_METERS_PER_SECOND = 80f
+    const val GRAVITY_PX_PER_SECOND = 1800f
+    const val JUMP_FORCE_PX_PER_SECOND = -900f
+
+    /**
+     * Posición horizontal fija del jugador dentro de la pantalla.
+     */
+    val PLAYER_START_X = 140.dp
+
+    /**
+     * Tamaño visual del personaje.
+     */
+    val PLAYER_WIDTH = 84.dp
+    val PLAYER_HEIGHT = 104.dp
+
+    /**
+     * Separación del personaje respecto a la parte inferior.
+     */
+    val GROUND_BOTTOM_MARGIN = 160.dp
 
     val SEGMENTS = listOf(
         RunnerSegment(
